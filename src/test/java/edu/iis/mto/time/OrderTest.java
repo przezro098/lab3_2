@@ -2,15 +2,14 @@ package edu.iis.mto.time;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
+
+import org.junit.jupiter.api.*;
 
 class OrderTest {
 
-    private Order order;
+    private static Order order;
 
-    @BeforeAll public void initialization() {
+    @BeforeAll public static void initialization() {
         order = new Order();
         order.addItem(new OrderItem());
     }

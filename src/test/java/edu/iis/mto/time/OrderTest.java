@@ -18,4 +18,13 @@ class OrderTest {
         return Instant.now().plus(Duration.standardHours(numberOfHours));
     }
 
+    @Test @DisplayName("Check whether order will change state to expired after 24 hours")
+    public void checkIfOrderWillBeExpiredAfterSpecifiedTimeTest() {
+
+        order.submit();
+        order.makeInstant(makeInstant(25));
+        Assertions.assertThrows(OrderExpiredException.class, () -> order.confirm());
+        Assertions.assertEquals(Order.State.CANCELLED, order.getOrderState());
+    }
+
 }

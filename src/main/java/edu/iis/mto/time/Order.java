@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import org.joda.time.Instant;
 
 public class Order {
 
@@ -12,9 +13,14 @@ public class Order {
     private State orderState;
     private List<OrderItem> items = new ArrayList<OrderItem>();
     private DateTime subbmitionDate;
+    private Instant instant;
 
     public Order() {
         orderState = State.CREATED;
+    }
+
+    public void makeInstant(Instant instant) {
+        this.instant = instant;
     }
 
     public void addItem(OrderItem item) {
@@ -35,8 +41,7 @@ public class Order {
 
     public void confirm() {
         requireState(State.SUBMITTED);
-        int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, new DateTime())
-                                               .getHours();
+        int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, instant.toDateTime()).getHours();
         if (hoursElapsedAfterSubmittion > VALID_PERIOD_HOURS) {
             orderState = State.CANCELLED;
             throw new OrderExpiredException();
@@ -59,18 +64,12 @@ public class Order {
             }
         }
 
-        throw new OrderStateException("order should be in state "
-                                      + allowedStates
-                                      + " to perform required  operation, but is in "
-                                      + orderState);
+        throw new OrderStateException(
+                "order should be in state " + allowedStates + " to perform required  operation, but is in " + orderState);
 
     }
 
     public enum State {
-        CREATED,
-        SUBMITTED,
-        CONFIRMED,
-        REALIZED,
-        CANCELLED
+        CREATED, SUBMITTED, CONFIRMED, REALIZED, CANCELLED
     }
 }

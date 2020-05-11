@@ -36,9 +36,7 @@ class OrderTest {
         Assertions.assertEquals(Order.State.CONFIRMED, order.getOrderState());
     }
 
-
-    @Test @DisplayName("Check whether order won't be expired after 24 hours")
-    public void checkIfOrderWontBeExpiredAfterLessThan24hTest() {
+    @Test @DisplayName("Check whether order won't be expired after 24 hours") public void checkIfOrderWontBeExpiredAfterLessThan24hTest() {
 
         order.submit();
         order.makeInstant(makeInstant(10));
@@ -55,9 +53,5 @@ class OrderTest {
         Assertions.assertEquals(Order.State.SUBMITTED, order.getOrderState());
 
     }
-
-
-
-
 
 }

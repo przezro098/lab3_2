@@ -36,6 +36,17 @@ class OrderTest {
         Assertions.assertEquals(Order.State.CONFIRMED, order.getOrderState());
     }
 
+    @Test @DisplayName("Check whether order will be realized without confirmation")
+    public void checkIfOrderWillBeRealizedInSubmittedStateTest() {
+
+        order.submit();
+        order.makeInstant(makeInstant(10));
+        Assertions.assertThrows(OrderStateException.class, () -> order.realize());
+        Assertions.assertEquals(Order.State.SUBMITTED, order.getOrderState());
+
+    }
+
+
 
 
 

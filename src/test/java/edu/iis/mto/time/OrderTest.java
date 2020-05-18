@@ -1,28 +1,30 @@
 package edu.iis.mto.time;
 
-import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.joda.time.DateTime;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class OrderTest {
 
     private static Order order;
+    private static MockClock mockClock;
+    private static DateTime time;
 
     @BeforeAll public static void initialization() {
-        order = new Order();
+        mockClock = new MockClock();
+        time = new DateTime();
+        order = new Order(mockClock);
+        mockClock.setTime(time);
         order.addItem(new OrderItem());
     }
 
-    public Instant makeInstant(int numberOfHours) {
-        return Instant.now().plus(Duration.standardHours(numberOfHours));
-    }
-
-    @Test @DisplayName("Check whether order will change state to expired after 24 hours")
+    @Test @DisplayName("Check whether order will change state to cancelled after 24 hours")
     public void checkIfOrderWillBeExpiredAfterSpecifiedTimeTest() {
-
         order.submit();
-        order.makeInstant(makeInstant(25));
+        mockClock.setTime(time.plusHours(30));
         Assertions.assertThrows(OrderExpiredException.class, () -> order.confirm());
         Assertions.assertEquals(Order.State.CANCELLED, order.getOrderState());
     }
@@ -31,15 +33,15 @@ class OrderTest {
     public void checkIfOrderWillBeExpiredAfterSpecifiedTimeSecondTest() {
 
         order.submit();
-        order.makeInstant(makeInstant(24));
+        mockClock.setTime(time.plusHours(25));
         order.confirm();
         Assertions.assertEquals(Order.State.CONFIRMED, order.getOrderState());
     }
 
-    @Test @DisplayName("Check whether order won't be expired after 24 hours") public void checkIfOrderWontBeExpiredAfterLessThan24hTest() {
+    @Test @DisplayName("Check whether order won't be expired after less than 24 hours") public void checkIfOrderWontBeExpiredAfterLessThan24hTest() {
 
         order.submit();
-        order.makeInstant(makeInstant(10));
+        mockClock.setTime(time.plusHours(10));
         order.confirm();
         Assertions.assertEquals(Order.State.CONFIRMED, order.getOrderState());
     }
@@ -48,7 +50,7 @@ class OrderTest {
     public void checkIfOrderWillBeRealizedInSubmittedStateTest() {
 
         order.submit();
-        order.makeInstant(makeInstant(10));
+        mockClock.setTime(time.plusHours(10));
         Assertions.assertThrows(OrderStateException.class, () -> order.realize());
         Assertions.assertEquals(Order.State.SUBMITTED, order.getOrderState());
 

@@ -2,10 +2,8 @@ package edu.iis.mto.time;
 
 import org.joda.time.DateTime;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.*;
 
 class OrderTest {
 
@@ -13,7 +11,7 @@ class OrderTest {
     private static MockClock mockClock;
     private static DateTime time;
 
-    @BeforeAll public static void initialization() {
+    @BeforeEach public void initialization() {
         mockClock = new MockClock();
         time = new DateTime();
         order = new Order(mockClock);
@@ -33,9 +31,9 @@ class OrderTest {
     public void checkIfOrderWillBeExpiredAfterSpecifiedTimeSecondTest() {
 
         order.submit();
-        mockClock.setTime(time.plusHours(25));
-        order.confirm();
-        Assertions.assertEquals(Order.State.CONFIRMED, order.getOrderState());
+        mockClock.setTime(time.plusHours(26));
+        Assertions.assertThrows(OrderExpiredException.class, () -> order.confirm());
+        Assertions.assertEquals(Order.State.CANCELLED, order.getOrderState());
     }
 
     @Test @DisplayName("Check whether order won't be expired after less than 24 hours") public void checkIfOrderWontBeExpiredAfterLessThan24hTest() {
